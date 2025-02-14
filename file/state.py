@@ -1,5 +1,5 @@
 class State:
-    def __init__(self, word: str, equals: str, comment: str = '', transitions=None, final: bool = False,
+    def __init__(self, word: str, equals: str, comment: str = '', transitions: list = None, final: bool = False,
                  decalage: int = 1, condition: tuple[tuple[int, str], str, str] = ()) -> None:
         if transitions is None:
             transitions = []

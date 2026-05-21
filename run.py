@@ -1,41 +1,41 @@
+import argparse
+import os
+
 import compile
 
-run_the_program: bool = False  # Put True if you want to run the program, false will just compile it
+default_path: str = './program'
 
-lang: str = 'fr'  # Put your langage code here
+parser = argparse.ArgumentParser(description="A interpreter for any custom programming language to Python.")
 
-program: str = '''
-// Cette ligne est un commentaire, elle ne sera pas interprétée.
-// Ce programme est un programme de test pour le langage de programmation "fr".
-// Il est utilisé pour tester le bon fonctionnement de l'interpréteur.
-// Vous pouvez jeter un œil au lignes suivantes pour comprendre le fonctionnement et la syntaxe du langage.
+parser.add_argument("-p", "--path", type=str, default=default_path,
+                    help="Path of the program or a folder where the program is to be interpreted.")
 
-Afficher "Hello World!".
+parser.add_argument("-r", "--run_the_program", help="Run or print the interpreted program.")
 
-Soit a une variable initialisée à 5.
-Afficher a.
+args = parser.parse_args()
 
-Incrémenter a de 5.
-Afficher a.
+program: str = ""
 
-Incrémenter a.
-Afficher a.
-
-Décrémenter a de 5.
-Afficher a.
-
-Décrémenter a.
-Afficher a.
-
-Multiplier a par 5.
-Afficher a.
-
-Diviser a par 5.
-Afficher a.
-'''  # Put your program here
-
-if __name__ == "__main__":
-    if run_the_program:
-        compile.run(program, lang)
+if os.path.isdir(args.path):
+    file_names = [f for f in os.listdir(args.path) if os.path.isfile(os.path.join(args.path, f))]
+    if len(file_names) == 1:
+        program = args.path + "/" + file_names[0]
     else:
-        print(compile.compile_program(program, lang))
+        print("Choose a file [0-" + str(len(file_names) - 1) + "]:")
+        for i in range(len(file_names)):
+            print(str(i) + ". " + file_names[i])
+        program = args.path + "/" + file_names[int(input("Your choice: "))]
+else:
+    program = args.path
+
+name, ext = os.path.splitext(program)
+
+lang = ext[1:]
+
+with open(program) as f:
+    program = f.read()
+
+if args.run_the_program:
+    compile.run(program, lang)
+else:
+    print(compile.compile_program(program, lang))
